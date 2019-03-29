@@ -1,0 +1,126 @@
+---
+title: "comparison"
+author: "liyiwei"
+date: "2019/3/24"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+ggplot2 vs. plot_ly
+
+
+compare plot_ly and ggplot2
+
+Introduction 
+
+plot_ly easily translate 'ggplot2' graphs to an interactive web-based version and/or create custom web-based visualizations directly from R. Once uploaded to a 'plotly' account, 'plotly' graphs (and the data behind them) can be viewed and modified in a web browser. Not only is this web-based user-interface to plotly.js useful for collaborating with others, but it is also useful for completing tasks that are cumbersome to do at the command-line. For instance, annotations can be added to any plot via a point-and-click interface
+
+
+Plotly and ggplot2 are inherently for different purposes. plotly allows you to quickly create beautiful, reactive D3 plots that are particularly powerful in websites and dashboards. 
+
+
+```{r}
+set.seed(1)
+library(plotly)
+plot_ly(x = ~rnorm(900), type = "histogram",marker=list(color="purple" , size=20 , opacity=0.5) )
+```
+
+```{r}
+
+library(ggplot2)
+p = qplot(x = rnorm(900),geom = "histogram",fill="#FF9999", colour="black")
+p
+```
+
+convert ggplot2 into plotly
+
+An additional benefit of plotly is that you can convert your ggplot() graphs into a plotly object.
+
+```{r}
+library(ggplot2)
+p = qplot(x = rnorm(1000),geom = "histogram",fill="#E69F00", colour="black")
+p
+```
+Then, invoking the ggplotly(p) command, we see the transformation:
+```{r}
+ggplotly(p)
+```
+
+A draw back of ggplotly() is that if you do refined customization (like putting your legend on the bottom of the graph), ggplotly() doesn???t seem to pick this up by default.
+```{r}
+# ggplot with legend on the bottom
+p = qplot(data = iris, x = Sepal.Width, y = Sepal.Length, geom = "point",color = Species) + theme(legend.position="bottom")
+p
+```
+
+```{r}
+# Plotly doesn't pick up the legend change
+ggplotly(p)
+```
+But since Plotly also saves to an object, you can use the %>% notation to pipe and add additional plotting commands. This is similar to the + operator in ggplot().
+```{r}
+p = qplot(data = iris, x = Sepal.Width, y = Sepal.Length, geom = "point",color = Species) + theme(legend.position="bottom")
+p2 = ggplotly(p) 
+# Use the plotly layout() command for legend customization
+p2 %>% layout(legend = list(orientation = 'h'))
+```
+
+```{r}
+#install.packages('ggplot2')
+library('ggplot2')
+data(diamonds)
+```
+diamonds in ggplot
+
+```{r}
+#install.packages("plotly")
+d <- diamonds[sample(nrow(diamonds), 100), ]
+```
+
+diamonds in plotly
+
+
+```{r}
+set.seed(100)
+ggplot(data = d, aes(x = carat, y = price,colour=carat)) +
+  geom_point(aes(text = paste("Clarity:", clarity)), size = 4)
+```
+
+
+```{r}
+set.seed(100)
+d <- diamonds[sample(nrow(diamonds), 1000), ]
+plot_ly(d, x = ~carat, y = ~price, color = ~carat,
+        size = ~carat, text = ~paste("Clarity: ", clarity))
+
+```
+
+
+As we can see, Plotly graphs are interactive. Click on legend entries to toggle traces, click-and-drag on the chart to zoom, double-click to autoscale, shift-and-drag to pan.
+
+
+
+Benefits of plotly over ggplot2:
+
+1.Plotly also handles long format.
+2.Customizing the layout (plot borders, y axis) is easier.
+3.Customizing the legend is easier (in ggplot2 I???ve wanted to remove just one series, which isn???t always easy).
+4.Documentation is better in Plotly.
+5.Plotly syntax is very intuitive (learning how aes() in ggplot2 works is tricky at first)
+6.Plotly also works for Python, Matlab, and Excel, among other languages.
+7.It???s very easy to add new series and customize them (one line, one scatter, and one bar, for example)
+8.You can use other fonts (which is possible in ggplot2, but I???ve never gotten to work on my Windows machine)
+9.You can toggle series on and off by clicking the series name in the legend
+
+
+Benefits of ggplot2 over plotly:
+
+1.Facet wrapping is very easy in ggplot2. (I think you have to do subplots in plotly.)
+2.ggplot2 is probably quicker for exploratory analysis.
+
+
+
